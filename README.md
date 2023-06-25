@@ -1,9 +1,12 @@
 # Mechanical-Keyboard-PCB
- This is a tutorial of my first mechanical keyboard PCB where I will be following 3 tutorials to build my own custom PCB:
- 
- - [Ruiqi Mao's PCB guide](https://wiki.ai03.com/link/24#bkmrk-from-ruiqi-mao%27s-pcb)
- - [ai03](https://wiki.ai03.com/books/pcb-design)
+ This is a writeup of my first mechanical keyboard PCB build where I will be following Masterzen's tutorial so in reality, most of this is a copy of his blogs with edits as necessary, so check his out:
+
  - [Masterzen](https://www.masterzen.fr/2020/05/03/designing-a-keyboard-part-1/)
+
+ I also referenced these great resources:
+
+ - [ai03](https://wiki.ai03.com/books/pcb-design)
+ - [Ruiqi Mao's PCB guide](https://wiki.ai03.com/link/24#bkmrk-from-ruiqi-mao%27s-pcb)
 
 The most important part of this is whole process is the initial setup stage, where you learn to setup your workspace, organise your directories, correctly install your **local** libraries and then store everything in a Github repository. Let me emphasis the importance of installing all libraries as local libraries - trust us on this one - read [here](https://wiki.ai03.com/books/pcb-design/page/pcb-guide-part-2---beginning-the-project) for more information on why.
 
@@ -11,8 +14,7 @@ The most important part of this is whole process is the initial setup stage, whe
 
 1. Setting up
 2. Beginning the project
-
-3.[ Creating the Schematic](https://github.com/g0tMarks/Mechanical-Keyboard-PCB/edit/main/README.md#creating-the-schematic)
+3. Creating the Schematic
 
 ## Setting up
 
@@ -42,16 +44,28 @@ Insert the MCU into the schematics and place it somewhere close to the right of 
 These are some helpful shortcuts from [Ruiqui Mao's PCB guide:](https://github.com/ruiqimao/keyboard-pcb-guide)
 
 m: pick the component up and move it
+
 g: drag the component up and move it while keeping wires attached to it
+
 c: copy the component
+
 e: edit the component
+
 r: rotate the component
+
 y: mirror the component
+
 del: delete the component
+
 esc: abort!
+
 w - Begin drawing a wire connection
+
 k - Cut a wire and stop drawing it without clicking on an endpoint
-Ctrl + h - Place a global net
+
+h - Place a label
+
+And a lot more shortcuts [here](https://shortcutworld.com/KiCAD/win/KiCAD_Shortcuts)
 
 Then let's tie UVCC, VCC, and AVCC to +5V, as specified by the datasheet.
 Press P to open the power symbols menu, and select the +5V symbol.
@@ -89,5 +103,65 @@ The UCAP is the internal USB pins voltage regulator, it has to be connected to a
 
 ![image](https://github.com/g0tMarks/Mechanical-Keyboard-PCB/assets/37822503/0d283767-8bde-47ea-90a2-3f6e574d688e)
 
+AREF doesn’t need to be wired, we’re going to mark it with a cross by pressing q and clicking on the pin. AREF (and AVCC FWIW) is used when doing analog signaling which we’re not going to do in our keyboard.
 
+### Hooking up the clock
+
+The very next step is to design the clock that drives the MCU and which will hook to the XTAL1 and XTAL2 labels.
+
+The [Atmega AN2519 tech-note](http://ww1.microchip.com/downloads/en/Appnotes/AN2519-AVR-Microcontroller-Hardware-Design-Considerations-00002519B.pdf) gives a recommended design and equations to compute the capacitance values. 
+
+Place a Crystal_GND24_small on the grid close to the MCU. Then wire it like this:
+
+![image](https://github.com/g0tMarks/Mechanical-Keyboard-PCB/assets/37822503/4ff83c09-32ef-4ab7-b1ee-ffeb45c448c6)
+
+In Kicad, every component has two important properties: the reference and the value. The reference is typically a combination of letters and numbers that uniquely identifies a component on the schematic. On the other hand, the value can be anything and serves different purposes depending on the component type. For passive components like resistors and capacitors, the value represents their respective units (ohms for resistors, farads for capacitance, etc.), while for ICs (integrated circuits), it usually denotes the component name.
+
+When a new component is added to the schematic in Kicad, the reference is initially set as one or more question marks (?). This indicates that the reference hasn't been assigned yet. To automatically assign references to all the components, Kicad provides an operation that can be used. This step is necessary for tasks like creating a PCB (Printed Circuit Board) or running the Electric Design Rule Checker, among others.
+
+To edit the values and references of a component in Kicad, you can hover the mouse pointer over the symbol and press the 'e' key. This will allow you to modify various aspects of the component, including its reference, value, symbol, and footprint. Additionally, there are shortcuts available to directly edit the value ('v') or the reference ('u').
+
+If you need to reposition the reference or value label of a component to prevent them from overlapping with wires or other elements, you can press the 'm' key while the mouse is positioned over the component. This action enables you to move the labels to more suitable locations within the schematic, ensuring clarity and readability.
+
+### Power decoupling
+
+The datasheet for the Atmega32U4 microcontroller recommends the use of decoupling capacitors on each +5V pin of the MCU. Decoupling capacitors play a crucial role in maintaining the stability of an active IC. When the component starts drawing current during its operation, it can cause a drop in the voltage of the power source. This voltage drop can be problematic not only for the component itself but also for other components connected to the same power source, as it introduces noise on the power line.
+
+To mitigate this issue, decoupling capacitors are added to each power pin of the IC. These capacitors act as local energy storage. When the IC begins consuming energy, the capacitors provide the necessary current without significantly affecting the power source. When the component is not actively drawing power, the decoupling capacitors gradually recharge, preparing for the next power demand.
+
+According to the [AN2519 technical notes](http://ww1.microchip.com/downloads/en/Appnotes/AN2519-AVR-Microcontroller-Hardware-Design-Considerations-00002519B.pdf), every VCC pin of the MCU should be decoupled using a 100nF (or 0.1µF) capacitor.
+
+For optimal effectiveness, the decoupling capacitors should be placed as close as possible to the MCU on the final PCB layout. In the case of the Atmega32U4, there are four VCC pins (2 AVCC, UVCC, and 2 x VCC), so ideally, five 100nF capacitors are needed, along with one 10μF capacitor for VBUS. In practice, it is possible to share the 10μF capacitor for both VBUS and UVCC and distribute the four 100nF capacitors among the remaining VCC pins.
+
+To avoid cluttering the electronic schematic, as suggested by ai03, the decoupling capacitors are grouped together in the schematic diagram.
+
+To implement this in the schematic, start by placing one capacitor and then use the 'c' command to copy and move the subsequent capacitors until all of them are placed. Finally, wire them according to the provided schema to establish the necessary connections.
+
+![image](https://github.com/g0tMarks/Mechanical-Keyboard-PCB/assets/37822503/74ccb0f1-7be8-4ca6-8450-f07749a85c8b)
+
+### ISP header
+
+In the event of a catastrophic failure or the loss of the DFU (Device Firmware Upgrade) bootloader, it may become necessary to reprogram the Atmega32U4 microcontroller. In such cases, the USB port cannot be used for programming purposes. Instead, the Serial Peripheral Interface (SPI) programming interface and [ISP (In-System Programming)](https://docs.qmk.fm/#/isp_flashing_guide) mode need to be accessed.
+
+To facilitate this, a 6-pin header with the necessary SPI signals will be included on the PCB. This header will provide a convenient connection point for the ISP programming mode. The specific signals required for the SPI programming interface will vary depending on the specific implementation and requirements. However, commonly used signals include:
+
+1. MISO (Master-In Slave-Out): This signal represents the data line from the slave device to the master device in SPI communication.
+
+2. MOSI (Master-Out Slave-In): This signal carries data from the master device to the slave device during SPI communication.
+
+3. SCK (Serial Clock): This signal is the clock line that synchronizes data transfer between the master and slave devices.
+
+4. SS (Slave Select): This signal is used to select the specific slave device for communication when multiple slave devices are connected to the same SPI bus.
+
+5. RESET: This signal is responsible for resetting the microcontroller during the programming process.
+
+6. VCC (Power Supply): This pin provides power to the programming interface.
+
+By including this 6-pin header on the PCB, it becomes possible to connect an ISP programmer or another compatible device to the Atmega32U4 microcontroller for reprogramming purposes. 
+
+![image](https://github.com/g0tMarks/Mechanical-Keyboard-PCB/assets/37822503/b8f9dda8-c52d-48d4-a1f0-92bd9ed61b9f)
+
+And associate it with the corresponding pins on the MCU:
+
+![image](https://github.com/g0tMarks/Mechanical-Keyboard-PCB/assets/37822503/933fd471-0111-42f9-bcf9-332bf2b3e8ef)
 
