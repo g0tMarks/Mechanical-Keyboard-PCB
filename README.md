@@ -1,12 +1,12 @@
 # Mechanical-Keyboard-PCB
- This is a writeup of my first mechanical keyboard PCB build where I will be following Masterzen's tutorial so in reality, most of this is a copy of his blogs with edits as necessary, so check his out:
+ This is a writeup of my first mechanical keyboard PCB build where I will be following Masterzen's tutorial so in reality, most of this is a copy of his blogs with edits as necessary, so all credit to him and please check his out:
 
  - [Masterzen](https://www.masterzen.fr/2020/05/03/designing-a-keyboard-part-1/)
 
  I also referenced these great resources:
 
  - [ai03](https://wiki.ai03.com/books/pcb-design)
- - [Ruiqi Mao's PCB guide](https://wiki.ai03.com/link/24#bkmrk-from-ruiqi-mao%27s-pcb)
+ - [Ruiqi Mao's PCB guide](https://github.com/ruiqimao/keyboard-pcb-guide)
 
 The most important part of this is whole process is the initial setup stage, where you learn to setup your workspace, organise your directories, correctly install your **local** libraries and then store everything in a Github repository. Let me emphasis the importance of installing all libraries as local libraries - trust us on this one - read [here](https://wiki.ai03.com/books/pcb-design/page/pcb-guide-part-2---beginning-the-project) for more information on why.
 
@@ -22,7 +22,8 @@ The most important part of this is whole process is the initial setup stage, whe
 ## Beginning the project
 Once you have everything set up in GitHub, you need to go to [keyboard-layout-editor](http://www.keyboard-layout-editor.com/) to create your layout.
 
-![image](https://github.com/g0tMarks/Mechanical-Keyboard-PCB/assets/37822503/fd757c3f-b3c4-4f8c-ab19-0edb2a49b1ad)
+![image](https://github.com/g0tMarks/Mechanical-Keyboard-PCB/assets/37822503/4d17aea1-72b0-4b11-980b-068c3d02a138)
+
 
 Once you have a layout, you need to figure out your rows and columns. 
 
@@ -93,7 +94,7 @@ Press h to open up the Hierarchical Label Properties and give it the name XTAL1 
 
 ![image](https://github.com/g0tMarks/Mechanical-Keyboard-PCB/assets/37822503/c7ff9430-a117-468f-b437-9648ee772f48)
 
-Let’s do the same with the D+/D- and RESET pins.
+Let’s do the same with the D+/D-.
 
 The next pin to wire is HWB. HWB is forced to GND with a pull down to make sure the MCU will boot with the boot-loader (refer to the data-sheet for more details). Create a R_small symbol for the resistor (we’ll use R_small symbols for all other resistors), then wire it like this:
 
@@ -107,7 +108,7 @@ AREF doesn’t need to be wired, we’re going to mark it with a cross by pressi
 
 ### Hooking up the clock
 
-The very next step is to design the clock that drives the MCU and which will hook to the XTAL1 and XTAL2 labels.
+The next step is to design the clock that drives the MCU and that will be hooked up to the XTAL1 and XTAL2 labels.
 
 The [Atmega AN2519 tech-note](http://ww1.microchip.com/downloads/en/Appnotes/AN2519-AVR-Microcontroller-Hardware-Design-Considerations-00002519B.pdf) gives a recommended design and equations to compute the capacitance values. 
 
@@ -164,4 +165,15 @@ By including this 6-pin header on the PCB, it becomes possible to connect an ISP
 And associate it with the corresponding pins on the MCU:
 
 ![image](https://github.com/g0tMarks/Mechanical-Keyboard-PCB/assets/37822503/933fd471-0111-42f9-bcf9-332bf2b3e8ef)
+
+It's important to note that the three signals required for the SPI programming interface consume three general I/O pins on the microcontroller, which could potentially be used for connecting the matrix. In the case of a matrix like mine with 19 rows and 6 columns, it would require a total of 25 I/O pins on the MCU. Therefore, I will need to share the ISP pins with the matrix. This approach takes advantage of the fact that during ISP programming, the matrix lines won't be in use, and during regular keyboard use, the ISP pins won't be in use.
+
+There are alternative matrix configurations that can be implemented to overcome the constraints of a limited number of pins. See [this](https://wiki.ai03.com/books/pcb-design/page/matrices-and-duplex-matrix) page for further reading on matrices and the duplex matrix.
+
+### Reset Button
+
+Let's hook up a reset switch. For this, you'll want a switch (SW_PUSH) named SW1 and a 10k resistor for pullup (R) named R1. If you want to know why we want a pullup resistor and what a pullup resistor even means, [here](https://learn.sparkfun.com/tutorials/pull-up-resistors) is a good explanation from Sparkfun. But for now, here's how it should be hooked up:
+
+![image](https://github.com/g0tMarks/Mechanical-Keyboard-PCB/assets/37822503/ac7607fe-b4f1-47d9-a076-2a1ed207dfe8)
+
 
