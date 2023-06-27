@@ -112,9 +112,10 @@ The next step is to design the clock that drives the MCU and that will be hooked
 
 The [Atmega AN2519 tech-note](http://ww1.microchip.com/downloads/en/Appnotes/AN2519-AVR-Microcontroller-Hardware-Design-Considerations-00002519B.pdf) gives a recommended design and equations to compute the capacitance values. 
 
-Place a Crystal_GND24_small on the grid close to the MCU. Then wire it like this:
+Place a Crystal_GND24_small on the grid close to the MCU. Then wire it like this, keeping the shunt capacitors ground symbol separate from the XTAL ground symbol:
 
-![image](https://github.com/g0tMarks/Mechanical-Keyboard-PCB/assets/37822503/4ff83c09-32ef-4ab7-b1ee-ffeb45c448c6)
+![image](https://github.com/g0tMarks/Mechanical-Keyboard-PCB/assets/37822503/a6c31641-aba8-46ff-917d-25dfdae7c794)
+
 
 In Kicad, every component has two important properties: the reference and the value. The reference is typically a combination of letters and numbers that uniquely identifies a component on the schematic. On the other hand, the value can be anything and serves different purposes depending on the component type. For passive components like resistors and capacitors, the value represents their respective units (ohms for resistors, farads for capacitance, etc.), while for ICs (integrated circuits), it usually denotes the component name.
 
@@ -176,4 +177,10 @@ Let's hook up a reset switch. For this, you'll want a switch (SW_PUSH) named SW1
 
 ![image](https://github.com/g0tMarks/Mechanical-Keyboard-PCB/assets/37822503/ac7607fe-b4f1-47d9-a076-2a1ed207dfe8)
 
+### USBC 2.0
 
+### ESD
+
+### Matrix
+
+![image](https://github.com/g0tMarks/Mechanical-Keyboard-PCB/assets/37822503/cc581e17-3612-45f0-955f-608f4f0cf5cb)
