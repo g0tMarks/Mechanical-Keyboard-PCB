@@ -20,9 +20,9 @@ The most important part of this is whole process is the initial setup stage, whe
 
 
 ## Beginning the project
-Once you have everything set up in GitHub, you need to go to [keyboard-layout-editor](http://www.keyboard-layout-editor.com/) to create your layout.
+Once you have everything set up in GitHub, you need to go to [keyboard-layout-editor](http://www.keyboard-layout-editor.com/) to create your layout. THis is the layout I have created will be using:
 
-![image](https://github.com/g0tMarks/Mechanical-Keyboard-PCB/assets/37822503/4d17aea1-72b0-4b11-980b-068c3d02a138)
+![image](https://github.com/g0tMarks/Mechanical-Keyboard-PCB/assets/37822503/bc088c73-f8e8-4b84-b15f-d9e3189bbbec)
 
 
 Once you have a layout, you need to figure out your rows and columns. 
