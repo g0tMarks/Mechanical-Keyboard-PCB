@@ -25,7 +25,11 @@ Once you have everything set up in GitHub, you need to go to [keyboard-layout-ed
 ![image](https://github.com/g0tMarks/Mechanical-Keyboard-PCB/assets/37822503/bc088c73-f8e8-4b84-b15f-d9e3189bbbec)
 
 
-Once you have a layout, you need to figure out your rows and columns. 
+Once you have a layout, you need to figure out your rows, columns and switches.
+
+![image](https://github.com/g0tMarks/Mechanical-Keyboard-PCB/assets/37822503/b1b9e2b1-ec3f-4c5c-b00f-faa5a05ee49a)
+
+I have 19 rows, 6 columns and 100 switches. This will require 25 GPIO pins on the Atmega32u4.
 
 
 ## Creating the Schematic
